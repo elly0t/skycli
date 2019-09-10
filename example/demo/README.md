@@ -6,7 +6,7 @@
 $ npm install -g @skygear/skycli@2.0.0-alpha.1
 ```
 
-1. Set skygear controller location
+2. Set skygear controller location
 
 ```
 $ skycli config set-cluster-server
@@ -14,7 +14,7 @@ $ skycli config set-cluster-server
 ? Cluster api key: <api_key>
 ```
 
-1. Check config
+3. Check config
 
 ```shell=bash
 $ skycli config view
@@ -31,7 +31,7 @@ $ skycli config view
 └──────────────────┴───────────────────────┘
 ```
 
-1. Sign up as a new Skygear controller user:
+4. Sign up as a new Skygear controller user:
 
 ```shell=bash
 $ skycli auth signup
@@ -40,7 +40,7 @@ $ skycli auth signup
 Sign up as <email>
 ```
 
-1. Create a Skygear app for our project:
+5. Create a Skygear app for our project:
 
 ```shell=bash
 $ skycli app create
@@ -58,7 +58,7 @@ To setup later, please run:
     skycli app scaffold
 ```
 
-1. Navigate to `/frontend/main.js` and configure Skygear SDK with your app's endpoint and API key.
+6. Navigate to `/frontend/main.js` and configure Skygear SDK with your app's endpoint and API key.
 
 ```js
 skygear.defaultContainer.configure({
@@ -79,10 +79,10 @@ skygear.defaultContainer.configure({
 1. Back to "Overview" tab, and find detail connect information by click "connect" button.
 1. Add your mongo DB connection string to your Skygear Secret:
 
-- through skycli:
-  `skycli secret create MONGO_DB_URL mongodb+srv://<user>:<password>@<hostname>/test?retryWrites=true`
+   a. through skycli:
+   `skycli secret create MONGO_DB_URL mongodb+srv://<user>:<password>@<hostname>/test?retryWrites=true`
 
-- through [Skygear Portal](https://portal.staging.skygear.dev/log-in) with your Skygear user credentials. Once logged in, you can add/delete secrets under the Secret Management section in your app.
+   b. through [Skygear Portal](https://portal.staging.skygear.dev/log-in) with your Skygear user credentials. Once logged in, you can add/delete secrets under the Secret Management section in your app.
 
 1. `skycli app deploy --cloud-code after_signup`
 
