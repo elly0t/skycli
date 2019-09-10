@@ -1,20 +1,21 @@
-## Step 1: Setup environment
+## Step 1: Set up
 
-1. Install `skycli`. In your terminal, run:
+1. Install `skycli`:
+
 ```shell=bash
-$ npm install -g skycli
+$ npm install -g @skygear/skycli@2.0.0-alpha.1
 ```
-2. Create a folder for the project:
-```shell=bash
-$ mkdir myProject && cd myProject
-```
-3. Set skygear controller location
+
+1. Set skygear controller location
+
 ```
 $ skycli config set-cluster-server
 ? Cluster server endpoint: <controller_endpoint>
 ? Cluster api key: <api_key>
 ```
-4. Check config
+
+1. Check config
+
 ```shell=bash
 $ skycli config view
 ┌──────────────────┬───────────────────────┐
@@ -29,142 +30,87 @@ $ skycli config view
 │ Account          │                       │
 └──────────────────┴───────────────────────┘
 ```
-5. Singup a new Skygear controller user:
+
+1. Sign up as a new Skygear controller user:
+
 ```shell=bash
 $ skycli auth signup
 ? Email: <email>
 ? Password: [input is hidden]
 Sign up as <email>
 ```
-6. Create a Skygear app for our project:
+
+1. Create a Skygear app for our project:
+
 ```shell=bash
-$ skycli.js app create
+$ skycli app create
 ? What is your app name? <appName>
 Creating app...
-Your API endpoint: https://<appName>.v2.dev.skygearapis.com/.
+Your API endpoint: hhttps://<appName>.staging.skygearapp.com/.
 Your Client API Key: <api key>.
 Your Master API Key: <master api key>.
 Created app successfully!
 
 ? Do you want to setup the project folder now? Or you can do it later by `skycli app scaffold` command.
-Setup now? (Y/n) Y
-? You're about to initialze a Skygear Project in this directory: ~/myProject
-Confirm? (Y/n)
+Setup now? (Y/n) n
 
-Fetching examples...
-? Select example: (Use arrow keys)
-  empty
-❯ nodejs-example
-
-Fetching js-example and initializing..
-Success! Initialized "nodejs-example" template in "~/myProject".
-```
-6. Check result
-```
-$ ls
-hello-world  skygear.yaml
-$ cat skygaer.yaml
-app: myProject
-cf:
-  function1:
-    type: http-handler
-    path: /hello-world
-    runtime_environment: node
-    src: hello-world
-$ cat hello-world/index.js
-module.exports = async function (context) {
-    console.log("headers=", JSON.stringify(context.request.headers));
-    console.log("body=", JSON.stringify(context.request.body));
-
-    return {
-        status: 200,
-        body: "Hello, world !\n"
-    };
-}
+To setup later, please run:
+    skycli app scaffold
 ```
 
-## Step 2: Setup database
+1. Navigate to `/frontend/main.js` and configure Skygear SDK with your app's endpoint and API key.
+
+```js
+skygear.defaultContainer.configure({
+  endpoint: 'CHANGE_TO_YOUR_APPS_ENDPOINT',
+  apiKey: 'CHANGE_TO_YOUR_APPS_API_KEY'
+});
+```
+
+## Step 2: Set up database
 
 1. Create an account on https://www.mongodb.com/cloud/atlas
-2. And create a cluster (M0 Sandbox is free).
-3. Set Cluster Name (e.g. `skygear-demo`).
-4. Then click security tab and create database user.
-5. Set IP Whitelist
+1. And create a cluster (M0 Sandbox is free).
+1. Set Cluster Name (e.g. `skygear-demo`).
+1. Then click security tab and create database user.
+1. Set IP Whitelist
    1. Click "ADD IP ADDRESS"
    2. CLick "ALLOW ACCESS FROM ANYWHERE"
-6. Back to "Overview" tab, and find detail connect information by click "connect" button.
-7. `skycli secret create MONGO_DB_URL mongodb+srv://<user>:<password>@<hostname>/test?retryWrites=true
-`
+1. Back to "Overview" tab, and find detail connect information by click "connect" button.
+1. Add your mongo DB connection string to your Skygear Secret:
 
-## Step 3: Setup after-signup-hook
+- through skycli:
+  `skycli secret create MONGO_DB_URL mongodb+srv://<user>:<password>@<hostname>/test?retryWrites=true`
 
-1. Show and explain `demo/js/after_signup.js`
-2. add following section to skygear.yaml
-```
-after_signup:
-    type: http-handler
-    path: /after_signup
-    hook:
-        event: after_signup
-        async: true
-        timeout: 65
-    runtime_environment: nodejs
-    entry: after_signup
-    src: js
-    secrets:
-        - MONGO_DB_URL
-```
-3. `skycli app deploy --cloud-code after_signup`
+- through [Skygear Portal](https://portal.staging.skygear.dev/log-in) with your Skygear user credentials. Once logged in, you can add/delete secrets under the Secret Management section in your app.
 
-## Step 3: Setup frontend
+1. `skycli app deploy --cloud-code after_signup`
+
+## Step 3 (optional): Play with frontend locally
 
 1. Go to frontend folder
+
 ```
 $ cd frontend
 $ npm install
 ```
-2. Update app endpoint in main.js
+
+2. Update app endpoint in main.js if you haven't done so
 3. Run locally
+
 ```
-$ node app.js
+$ npm start
 ```
-4. Open browser, and type in url
-```
-$ curl http://localhost:8080
-```
-5. Now you can find a basic UI for user signup
-6. Show after signup result in mongodb
+
+4. Open browser, and type in url `http://localhost:8080`
+5. Log in and sign up will work as Skygear comes with an auth backend service. The auth functions are called through Skygear SDK in `frontend/main.js`
+6. Other backend functions like write blog won't work, as they are not deployed yet
 
 ## Step 4: Write blog
 
-1. Show cloud code `demo/js/write_blog.js`
-2. Set skygear.yaml
-```
-write_blog:
-    type: http-handler
-    path: /write_blog
-    runtime_environment: nodejs
-    entry: write_blog
-    src: js
-    secrets:
-        - MONGO_DB_URL
-```
-3. `skycli app deploy --cloud-code write_blog`
-4. Demo write blog
+1. Go back to the `demo` directory and ensure there exists a `skygear.yaml` config file.
+1. To deploy, run:
 
-## Step 5: List blogs
-
-1. Show cloud code `demo/js/fetch_blogs.js`
-2. Set skygear.yaml
 ```
-fetch_blogs:
-    type: http-handler
-    path: /fetch_blogs
-    runtime_environment: nodejs
-    entry: fetch_blogs
-    src: js
-    secrets:
-        - MONGO_DB_URL
+skycli app deploy
 ```
-3. `skycli app deploy --cloud-code fetch_blogs`
-4. Demo list blogs
